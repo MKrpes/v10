@@ -22,6 +22,12 @@ namespace all_tests
 		}
 		return false;
 	}
+	struct IsVowel {
+		bool operator()(char let) const {
+			return is_vowel(let);
+		}
+	};
+
 	TEST_CLASS(test_v10)
 	{
 	public:
@@ -72,7 +78,7 @@ namespace all_tests
 			int x[] = { 3, 5, 10 };
 			std::vector<int> y = { 4, 12, 10 };
 			std::vector<double> d;
-			std::transform(y.begin(), y.end(), std::begin(x), std::back_inserter(d), [](double a, double b) {return hypot(a, b); });
+			std::transform(y.begin(), y.end(), std::begin(x), std::back_inserter(d), hypot<int,int>);
 			Assert::AreEqual(3ull, d.size());
 			Assert::AreEqual(5., d[0]);
 			Assert::AreEqual(13., d[1]);
@@ -143,7 +149,7 @@ namespace all_tests
 		TEST_METHOD(test_07b)
 		{
 			std::string s("neisporuka");
-			replace_if(s.begin(), s.end(), [](char let) {return is_vowel(let); }, 'x');
+			replace_if(s.begin(), s.end(), IsVowel{}, 'x');
 			Assert::AreEqual("nxxspxrxkx", s.c_str());
 		}
 		TEST_METHOD(test_08a)
@@ -158,7 +164,7 @@ namespace all_tests
 		TEST_METHOD(test_08b)
 		{
 			std::string s("poliuretan");
-			s.erase(remove_if(s.begin(), s.end(), [](char let) {return is_vowel(let); }),s.end());
+			s.erase(remove_if(s.begin(), s.end(), IsVowel{}), s.end());
 			Assert::AreEqual("plrtn", s.c_str());
 		}
 		TEST_METHOD(test_09)
@@ -210,7 +216,7 @@ namespace all_tests
 			std::vector<int> v(atp_points.size());
 			sort(atp_points.begin(), atp_points.end());
 			std::adjacent_difference(atp_points.begin(), atp_points.end(), v.begin());
-			auto smallest_difference = (*std::min_element(v.begin(), v.end()));
+			auto smallest_difference = (*std::min_element(v.begin()+1, v.end()));
 			Assert::AreEqual(15, smallest_difference);
 		}
 	};
